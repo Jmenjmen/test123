@@ -25,7 +25,7 @@ export class Register {
 
             const user = new userModel({ username, mail, password });
             await user.save();
-            const tokens = session.createSession(user, req.headers["user-agent"] || "");
+            const tokens = await session.createSession(user, req.headers["user-agent"] || "");
             res.status(200).json(tokens);
         }
         catch (e) {

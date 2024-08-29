@@ -24,7 +24,7 @@ export class Login {
                 return
             }
 
-            const tokens = session.createSession(candidate, req.headers["user-agent"] || "");
+            const tokens = await session.createSession(candidate, req.headers["user-agent"] || "");
             res.status(200).json(tokens);
         }
         catch (e) {
@@ -33,8 +33,8 @@ export class Login {
     }
 
     test(req: Request, res: Response) {
-        const one = jwt.verify(req.body.token);
+        const {valid} = jwt.verify(req.headers.authorization!);
         const one2 = jwt.verify('123');
-        res.json({one, one2})
+        res.json({valid, one2})
     }
 }

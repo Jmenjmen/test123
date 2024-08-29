@@ -9,6 +9,5 @@ export interface iRegister {
 }
 
 export interface iPayload {
-    user: userDocument;
     session: sessionDocument;
 }

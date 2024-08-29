@@ -1,15 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import { JWT } from "../jwt/jwt";
+import { Session } from "../../auth/session/session";
 
-const jwt = new JWT();
+const sessionClass = new Session();
 
-export function isAuthorized(req: Request, res: Response, next: NextFunction): undefined {
-    const token = req.headers.authorization;
+export async function isAuthorized(req: Request, res: Response, next: NextFunction): Promise<undefined> {
+    const token = res.locals.newToken || req.headers.authorization;
 
-    if(!token || !jwt.verify(token)) {
+    if(!token) {
         res.redirect('/');
-        return
+        return;
     }
 
+    const session = await sessionClass.getSession(token);
+    if(!session) {
+        res.redirect('/');
+        return;
+    }
+
+    res.locals.user = session;
     next();
 }
