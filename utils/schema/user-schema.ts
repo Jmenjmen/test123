@@ -32,15 +32,12 @@ const userSchema = new Schema({
 }, { timestamps: true })
 
 userSchema.pre('save', async function(next) {
-    const user = this as unknown as userDocument;
+    const user = this as userDocument;
     
-    if(!user.isModified('password')) {
-        return next()    
-    }
+    if(!user.isModified('password')) return next();
 
     const salt = await bcrypt.genSalt(7);
-    const hashedPassword = await bcrypt.hash(user.password, salt);
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(user.password, salt);
     next();
 })
 

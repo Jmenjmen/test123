@@ -11,21 +11,14 @@ export class Session {
         const session = new sessionModel({ user: user, userAgent: userAgent});
         await session.save();
 
-        const token = jwt.signToken({session});
-        const refreshToken = jwt.signRefreshToken({session});
-
-        console.log(await this.getSession(token));
-        return {token, refreshToken};
+        return {token: jwt.signToken({ session }), refreshToken: jwt.signRefreshToken({ session })};
     }
 
-    public async getSession(token: string): Promise<any> {
+    public async getSession(token: string): Promise<sessionDocument | undefined> {
         try {
             const {decode} = jwt.verify(token);
-            const findSession = decode?.session._id || "";
-            console.log(findSession, 'get ss')
-            const session = await sessionModel.findOne({_id: findSession});
 
-            return session;
+            return await sessionModel.findOne({ _id: decode?.session._id || "" }) as sessionDocument;
         } catch (e) {
             console.log(e);
             return;
@@ -34,37 +27,41 @@ export class Session {
 
     public async deleteSession(token: string): Promise<undefined | true> {
         const session = await this.getSession(token);
+        if(!session) return;
 
-        if(!session) {
-            return;
-        }
-
-        sessionModel.findOneAndDelete({session});
+        await sessionModel.findOneAndDelete({session});
         return true;
     }
 
     public async refreshToken(refreshToken: string): Promise<undefined | string> {
         try{
             const {valid, expired, decode} = jwt.verify(refreshToken);
-            const findSession = "66d034349a6d9416825f819a"; // valid _id
-            const session = await sessionModel.findOne({_id: "66d034349a6d9416825f819a"});
+            const session = await sessionModel.findOne({_id: decode?.session._id || ""});
     
-            if(!session) {
-                return;
-            }
-            if(!valid || expired) {
-                await sessionModel.findOneAndDelete({_id: session._id});
-                return;
-            }
-            if(!session.valid) {
-                await sessionModel.findOneAndDelete({_id: session._id});
-                return;
-            }
+            if(!session) return;
+            if(!await this.isTokenValidAndNotExpired(valid, expired, session)) return;
+            if(!await this.isSessionValid(session)) return;
     
             return jwt.signToken({session});
         } catch (e) {
             console.log(e);
             return;
         }
+    }
+
+    private async isTokenValidAndNotExpired(isValid: boolean, isExpired: boolean, session: sessionDocument): Promise<boolean> {
+        if(!isValid || isExpired) {
+            await sessionModel.findOneAndDelete({_id: session._id});
+            return false;
+        }
+        return true;
+    }
+
+    private async isSessionValid(session: sessionDocument): Promise<boolean> {
+        if(!session.valid) {
+            await sessionModel.findOneAndDelete({_id: session._id});
+            return false;
+        }
+        return true;
     }
 }

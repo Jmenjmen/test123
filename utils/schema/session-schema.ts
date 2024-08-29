@@ -1,5 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
-import { userDocument, userModel } from './user-schema';
+import { userDocument } from './user-schema';
 
 export interface sessionDocument extends mongoose.Document {
     _id: Types.ObjectId;

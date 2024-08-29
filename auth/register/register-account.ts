@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { userModel } from "../../utils/schema/user-schema";
-import { JWT } from "../../utils/jwt/jwt";
 import { Session } from "../session/session";
 
-const jwt = new JWT();
 const session = new Session();
 
 export class Register {
@@ -14,22 +12,21 @@ export class Register {
 
             if(repeatPassword !== password) {
                 res.status(401).json({response: "passwords is wrong"})
-                return
+                return;
             }
 
-            const candidate = await userModel.findOne({mail: mail});
-            if(candidate) {
+            if(await userModel.findOne({ mail: mail })) {
                 res.status(409).json({response: "user with this mail is existing now"})
-                return
+                return;
             }
 
             const user = new userModel({ username, mail, password });
             await user.save();
-            const tokens = await session.createSession(user, req.headers["user-agent"] || "");
-            res.status(200).json(tokens);
+            res.status(200).json((await session.createSession(user, req.headers["user-agent"] || "")));
         }
         catch (e) {
             console.log(e);
+            res.status(505).send('something gone wrong');
         }
     }
 }

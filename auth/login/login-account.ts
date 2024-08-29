@@ -15,20 +15,19 @@ export class Login {
             const candidate = await userModel.findOne({mail: mail});
             if(!candidate) {
                 res.status(409).json({response: "user with this mail is not exists"})
-                return
+                return;
             }
 
-            const isPasswordValid = await candidate.comparePassword(password);
-            if(!isPasswordValid) {
+            if(!await candidate.comparePassword(password)) {
                 res.status(401).json({response: "passwords is wrong"})
-                return
+                return;
             }
 
-            const tokens = await session.createSession(candidate, req.headers["user-agent"] || "");
-            res.status(200).json(tokens);
+            res.status(200).json((await session.createSession(candidate, req.headers["user-agent"] || "")));
         }
         catch (e) {
             console.log(e);
+            res.status(505).send('something gone wrong');
         }
     }
 

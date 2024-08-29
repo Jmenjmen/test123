@@ -12,7 +12,7 @@ export interface verifySession {
 export class JWT {
 
     signToken(payload: iPayload): string {
-        return jwt.sign(payload, privateKey, { expiresIn: '30s', algorithm: 'RS256' });
+        return jwt.sign(payload, privateKey, { expiresIn: '20m', algorithm: 'RS256' });
     }
 
     signRefreshToken(payload: iPayload): string {
