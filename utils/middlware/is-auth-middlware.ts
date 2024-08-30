@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Session } from "../../auth/session/session";
+import { sessionDocument } from '../schema/session-schema';
 
 const sessionClass = new Session();
 
@@ -17,6 +18,6 @@ export async function isAuthorized(req: Request, res: Response, next: NextFuncti
         return;
     }
 
-    res.locals.user = session;
+    res.locals.user = session as sessionDocument;
     next();
 }
