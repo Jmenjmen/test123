@@ -5,6 +5,7 @@ import { isAuthorized } from "../utils/middlware/is-auth-middlware";
 import { uploadVideoHandller } from '../video/video-upload';
 
 const router = Router();
+const uploadClass = new uploadVideoHandller();
 
 //auth
 router.post('/auth/register', new Register().register);
@@ -14,7 +15,7 @@ router.post('/auth/login', new Login().login);
 router.post('/auth/test', isAuthorized, new Login().test);
 
 //video
-router.post('/video/upload', isAuthorized, new uploadVideoHandller().upload);
+router.post('/video/upload', isAuthorized, uploadClass.upload.bind(uploadClass));
 
 
 
