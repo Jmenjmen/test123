@@ -7,6 +7,7 @@ export interface videoDocument extends mongoose.Document {
     description: string;
     title: string;
     videoId: string;
+    extension: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -25,6 +26,10 @@ const videoSchema = new Schema({
         required: true,
     },
     videoId: {
+        type: String,
+        required: true
+    },
+    extension: {
         type: String,
         required: true
     }

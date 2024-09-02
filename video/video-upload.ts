@@ -22,7 +22,12 @@ export class uploadVideoHandller {
             bb.on('close', async () => {
                 const [filePath, videoFormData] = await Promise.all([filePromise, formDataPromise]);
                 try {
-                    const newVideo = new videoModel({ title: videoFormData.title, description: videoFormData.description ?? "", owner: user.user, videoId: videoId });
+                    const newVideo = new videoModel({ title: videoFormData.title,
+                        description: videoFormData.description ?? "",
+                        owner: user.user,
+                        videoId: videoId,
+                        extension: filePath.split('.')[1] });
+
                     await newVideo.save();
                     return res.status(202).send('Video seccesfully uploaded\n');
                 } catch (e) {
@@ -51,12 +56,12 @@ export class uploadVideoHandller {
                 file.pipe(stream);
                 
                 stream.on('finish', () => resolve(saveTo));
-                stream.on('error', () => res.status(505).send('busboy xueta'))
+                stream.on('error', () => res.status(505).send('Error to file write'));
             });
         });
     }
 
-    private checkAndCreateUserDirectory(user: string, videoId: string, extension: string): Promise<string> {
+    public checkAndCreateUserDirectory(user: string, videoId: string, extension: string): Promise<string> {
         const folderPath = path.join(__dirname, '..', 'user-videos', user.toString());
         if(!fs.existsSync(folderPath)) {
             fs.mkdirSync(folderPath);
