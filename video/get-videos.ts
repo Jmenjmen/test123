@@ -67,6 +67,6 @@ export class getVideo {
         const {username} = req.params;
 
         const user = await userModel.findOne({ username: username });
-        return await videoModel.find({ user: user }).exec();
+        return await videoModel.find({ owner: user?._id }).exec();
     }
 }

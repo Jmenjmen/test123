@@ -17,7 +17,6 @@ export class Session {
     public async getSession(token: string): Promise<sessionDocument | undefined> {
         try {
             const {decode} = jwt.verify(token);
-
             return await sessionModel.findOne({ _id: decode?.session._id || "" }) as sessionDocument;
         } catch (e) {
             console.log(e);
@@ -25,9 +24,9 @@ export class Session {
         }
     }
 
-    public async deleteSession(token: string): Promise<undefined | true> {
+    public async deleteSession(token: string): Promise<boolean> {
         const session = await this.getSession(token);
-        if(!session) return;
+        if(!session) return false;
 
         await sessionModel.findOneAndDelete({session});
         return true;

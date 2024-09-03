@@ -17,7 +17,7 @@ export class uploadVideoHandller {
             const videoId = v4();
             
             const filePromise = this.getAndSaveVideo(bb, res, user, videoId);
-            const formDataPromise = this.getFieldsFromFromData(bb);
+            const formDataPromise = this.getFieldsFromFormData(bb);
 
             bb.on('close', async () => {
                 const [filePath, videoFormData] = await Promise.all([filePromise, formDataPromise]);
@@ -71,7 +71,7 @@ export class uploadVideoHandller {
         });
     }
 
-    private getFieldsFromFromData(bb: busboy.Busboy): Promise<Record<string, string>> {
+    private getFieldsFromFormData(bb: busboy.Busboy): Promise<Record<string, string>> {
         return new Promise((resolve, reject) => {
             const videoFormData: Record<string, string> = {};
 

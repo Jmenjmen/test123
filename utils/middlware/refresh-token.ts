@@ -26,7 +26,6 @@ export async function isTokenValid(req: Request, res: Response, next: NextFuncti
     if(newToken) {
         res.setHeader('x-access-token', newToken);
         res.locals.newToken = newToken;
-        const result = jwt.verify(newToken);
         return next();
     }
     

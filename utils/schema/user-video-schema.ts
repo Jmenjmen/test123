@@ -3,7 +3,7 @@ import { userDocument } from './user-schema';
 
 export interface videoDocument extends mongoose.Document {
     _id: Types.ObjectId;
-    user: userDocument;
+    owner: userDocument;
     description: string;
     title: string;
     videoId: string;
