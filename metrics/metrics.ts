@@ -37,4 +37,4 @@ export class Metric {
 const metric = new Metric();
 app.get('/metrics', metric.getMetric);
 
-app.listen(2000);
+app.listen(4001);
