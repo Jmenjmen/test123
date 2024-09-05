@@ -30,5 +30,8 @@ router.get('/video/watch/:username/:videoId', getVideoClass.getVideoStream.bind(
 router.get('/stub/event', responseTime((req: Request, res: Response, time: number) => {
     metric.HistogramOberve(req.method, 'payment-event', res.statusCode, time);
 }), stubEvent.paymentEvent);
+router.get('/stub/event2', responseTime((req: Request, res: Response, time: number) => {
+    metric.GaugeOberve(req.method, 'payment-event', res.statusCode, time);
+}), stubEvent.paymentEvent);
 
 export default router;

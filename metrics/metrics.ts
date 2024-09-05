@@ -12,8 +12,14 @@ const histogram = new client.Histogram({
     help: 'stubed_events_help',
     labelNames: ['statusCode', 'method', 'eventName']
 });
+const gauge = new client.Gauge({
+    name: 'stubed_events_gauge',
+    help: 'stubed_events_gauge_help',
+    labelNames: ['statusCode', 'method', 'eventName']
+});
 
 register.registerMetric(histogram);
+register.registerMetric(gauge);
 
 const app = express();
 
@@ -24,13 +30,18 @@ export class Metric {
         res.send(await register.metrics());
     }
 
-    HistogramOberve(method: string, eventName: string, statusCode: number | undefined, time: number): void {
-        console.log('metric created')
+    HistogramOberve(method: string, eventName: string, statusCode: number, time: number): void {
+        console.log('histogram metric created')
         histogram.observe({
             statusCode: statusCode,
             method: method,
             eventName: eventName
         }, Number(time.toFixed(2)));
+    }
+
+    GaugeOberve(method: string, eventName: string, statusCode: number, time: number): void {
+        console.log('gauge metric created')
+        gauge.set({statusCode: statusCode, method: method, eventName: eventName}, Number(time.toFixed(2)));
     }
 }
 
