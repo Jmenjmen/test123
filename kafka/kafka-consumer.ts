@@ -1,3 +1,4 @@
+import { listenersMap } from "./kafka-listeners";
 import { kafka } from "./kafka-producer";
 
 const consumer = kafka.consumer({
@@ -10,20 +11,15 @@ export class kafkaConsumer {
         console.log('start consuming');
         await consumer.connect();
         await consumer.subscribe({
-            topic: 'payment-event-test',
+            topics: ['payment-event-test', 'payment-canceled-event'],
             fromBeginning: true,
         })
         await consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
-                console.log(`Kafka consumer. Topic: ${topic}\n
-                    Partition: ${partition}\n
-                    Message: ${new Date(Number(message.timestamp)).toLocaleDateString('cz-CZ', {
-                    month: "short",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    second: "numeric"
-                })}:: ${message.value}`)
+                console.log(topic);
+                const listeners = listenersMap.get(topic) ?? [];
+                const calls = listeners.map(async (listener) => listener.onMessage(message));
+                Promise.all(calls);
             }
         })
     }

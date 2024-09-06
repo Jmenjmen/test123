@@ -5,6 +5,9 @@ import morgan from "morgan";
 import cors from "cors";
 import { isTokenValid } from "./utils/middlware/refresh-token";
 import bodyParser from "body-parser";
+import { kafkaConsumer } from "./kafka/kafka-consumer";
+
+const KafkaConsumer = new kafkaConsumer();
 
 const port = '1234' || process.env.PORT;
 
@@ -18,6 +21,7 @@ app.use(cors());
 
 app.use('/api', isTokenValid, router);
 
-app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`)
+app.listen(port, async () => {
+    console.log(`Server started on http://localhost:${port}`);
+    await KafkaConsumer.kafkaPaymentEventConsume();
 });

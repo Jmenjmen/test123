@@ -8,10 +8,13 @@ import { StubEvent } from "../stub-events/stub-event";
 import { Metric } from "../metrics/metrics";
 import responseTime from "response-time";
 import { kafkaConsumer } from "../kafka/kafka-consumer";
+import { kafkaProducer } from "../kafka/kafka-producer";
 
 const router = Router();
 const uploadClass = new uploadVideoHandller();
 const getVideoClass = new getVideo();
+
+const KafkaProducer = new kafkaProducer();
 
 const metric = new Metric();
 const stubEvent = new StubEvent();
@@ -28,17 +31,13 @@ router.post('/video/upload', isAuthorized, uploadClass.upload.bind(uploadClass))
 router.get('/video/watch/:username/:videoId', getVideoClass.getVideoStream.bind(getVideoClass));
 
 //stub event
-router.get('/stub/event', responseTime((req: Request, res: Response, time: number) => {
+router.get('/stub/event', responseTime(async (req: Request, res: Response, time: number) => {
     metric.HistogramOberve(req.method, 'payment-event', res.statusCode, time);
+    await KafkaProducer.sendPeymentCreatedEventMessage('payment created event test listener');
 }), stubEvent.paymentEvent);
-router.get('/stub/event2', responseTime((req: Request, res: Response, time: number) => {
+router.get('/stub/event2', responseTime(async (req: Request, res: Response, time: number) => {
     metric.GaugeOberve(req.method, 'payment-event', res.statusCode, time);
+    await KafkaProducer.sendPeymentCanceledEventMessage('payment canceled event test listener');
 }), stubEvent.paymentEvent);
-
-router.get('/kafka/consume', async (req: Request, res: Response) => {
-    const KafkaConsumer = new kafkaConsumer();
-    await KafkaConsumer.kafkaPaymentEventConsume();
-    res.send('yes');
-})
 
 export default router;
