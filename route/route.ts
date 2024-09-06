@@ -7,6 +7,7 @@ import { getVideo } from "../video/get-videos";
 import { StubEvent } from "../stub-events/stub-event";
 import { Metric } from "../metrics/metrics";
 import responseTime from "response-time";
+import { kafkaConsumer } from "../kafka/kafka-consumer";
 
 const router = Router();
 const uploadClass = new uploadVideoHandller();
@@ -33,5 +34,11 @@ router.get('/stub/event', responseTime((req: Request, res: Response, time: numbe
 router.get('/stub/event2', responseTime((req: Request, res: Response, time: number) => {
     metric.GaugeOberve(req.method, 'payment-event', res.statusCode, time);
 }), stubEvent.paymentEvent);
+
+router.get('/kafka/consume', async (req: Request, res: Response) => {
+    const KafkaConsumer = new kafkaConsumer();
+    await KafkaConsumer.kafkaPaymentEventConsume();
+    res.send('yes');
+})
 
 export default router;

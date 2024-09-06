@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { Metric } from "../metrics/metrics";
+import { kafkaProducer } from "../kafka/kafka-producer";
 
 export class StubEvent {
 
-    paymentEvent(req: Request, res: Response) {
+    async paymentEvent(req: Request, res: Response) {
+        const KafkaProducer = new kafkaProducer();
+        await KafkaProducer.sendPeymentEventMessage('payment-created-event');
         res.status(202).send('metric was created');
     }
 }
