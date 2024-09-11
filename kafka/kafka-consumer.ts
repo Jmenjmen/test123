@@ -16,7 +16,6 @@ export class kafkaConsumer {
         })
         await consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
-                console.log(topic);
                 const listeners = listenersMap.get(topic) ?? [];
                 const calls = listeners.map(async (listener) => listener.onMessage(message));
                 Promise.all(calls);
