@@ -1,0 +1,8 @@
+FROM node:18.20.3
+
+WORKDIR /push
+COPY . .
+
+EXPOSE 9123
+
+CMD [ "npm", "start" ]

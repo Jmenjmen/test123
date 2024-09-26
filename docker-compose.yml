@@ -2,7 +2,7 @@ services:
   node-server:
     # image: node:18.20.3 if create a new container, but if you have dockerfile do this
     build:
-      context: ./server
+      context: ./authorizetion
       dockerfile: Dockerfile.server
     container_name: mynode
 #   volumes:
@@ -13,12 +13,13 @@ services:
       - 4001:4001 #metric server
       - 9090:9090 #prometheus
      
-  frontend:
+  
+  push-notifier:
     build: 
-      context: ./simple-frontend
-      dockerfile: Dockerfile.frontend
-    container_name: frontend
+      context: ./push-notifice
+      dockerfile: Dockerfile.push
+    container_name: push-notifier
     ports:
-      - 80:80
+      - 9123:9123
     depends_on:
-      - node-server
+      - node-server  
