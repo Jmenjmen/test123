@@ -1,12 +1,12 @@
 import { KafkaMessage } from "kafkajs";
-import { Metric } from "metrics";
 import { KafkaListener } from "../kafka/kafka-listener";
+import { Metric } from "metrics";
 
-export class PaymentSendListener implements KafkaListener {
+export class PaymentCancelListener implements KafkaListener {
 
     constructor(private metricsClass: Metric) {}
 
     async message(message: KafkaMessage): Promise<void> {
-        this.metricsClass.ObserveTypeHistogram('Payment-send');
+        this.metricsClass.ObserveTypeHistogram('Payment-cancel');
     }
 }
