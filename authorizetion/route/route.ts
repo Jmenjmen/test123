@@ -5,7 +5,7 @@ import { isAuthorized } from "../utils/middlware/is-auth-middlware";
 import { uploadVideoHandller } from '../video/video-upload';
 import { getVideo } from "../video/get-videos";
 import { StubEvent } from "../stub-events/stub-event";
-import { Metric } from "../metrics/metrics";
+import { Metric } from "../../tools/metrics/metrics";
 import responseTime from "response-time";
 import { kafkaProducer } from "../kafka/kafka-producer";
 
@@ -16,6 +16,7 @@ const getVideoClass = new getVideo();
 const KafkaProducer = new kafkaProducer();
 
 const metric = new Metric();
+metric.listen();
 const stubEvent = new StubEvent();
 
 //auth
@@ -31,11 +32,11 @@ router.get('/video/watch/:username/:videoId', getVideoClass.getVideoStream.bind(
 
 //stub event
 router.get('/stub/event', responseTime(async (req: Request, res: Response, time: number) => {
-    metric.HistogramOberve(req.method, 'payment-event', res.statusCode, time);
+    metric.HistogramObserve(req.method, 'payment-event', res.statusCode, time);
     await KafkaProducer.sendPeymentCreatedEventMessage('payment created event test listener');
 }), stubEvent.paymentEvent);
 router.get('/stub/event2', responseTime(async (req: Request, res: Response, time: number) => {
-    metric.GaugeOberve(req.method, 'payment-event', res.statusCode, time);
+    metric.GaugeObserve(req.method, 'payment-event', res.statusCode, time);
     await KafkaProducer.sendPeymentCanceledEventMessage('payment canceled event test listener');
 }), stubEvent.paymentEvent);
 

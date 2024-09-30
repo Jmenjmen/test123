@@ -3,12 +3,10 @@ import { Kafka } from "kafkajs";
 
 export const kafka = new Kafka({
     clientId: 'test-id',
-    brokers: ['localhost:9092']
+    brokers: ['192.168.0.203:9092']
 })
 
-const producer = kafka.producer({
-    allowAutoTopicCreation: false,
-});
+const producer = kafka.producer();
 
 export class kafkaProducer {
 

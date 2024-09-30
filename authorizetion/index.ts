@@ -7,7 +7,7 @@ import { isTokenValid } from "./utils/middlware/refresh-token";
 import bodyParser from "body-parser";
 
 
-const port = '1234' || process.env.PORT;
+const port = process.env.PORT || '1234';
 
 const app = express();
 MongoDBConnect();
