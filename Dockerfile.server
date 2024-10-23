@@ -1,0 +1,14 @@
+FROM node:18.20.3
+
+WORKDIR /app
+COPY . ./authorizetion
+
+RUN npm i pm2 -g && npm install -g bun
+RUN npm install /tools/metrics
+
+
+EXPOSE 1234
+EXPOSE 4001
+EXPOSE 3000
+
+CMD ["npm", "start"]

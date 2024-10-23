@@ -1,25 +1,49 @@
 services:
   node-server:
-    # image: node:18.20.3 if create a new container, but if you have dockerfile do this
     build:
-      context: ./authorizetion
+      context: ./
       dockerfile: Dockerfile.server
     container_name: mynode
-#   volumes:
     environment:
       - author=Artem
+    volumes:
+      - ./tools:/tools
     ports:
       - 1234:1234 #server
       - 4001:4001 #metric server
-      - 9090:9090 #prometheus
      
   
   push-notifier:
     build: 
-      context: ./push-notifice
+      context: ./
       dockerfile: Dockerfile.push
     container_name: push-notifier
+    volumes:
+      - ./tools:/tools
     ports:
       - 9123:9123
     depends_on:
       - node-server  
+
+  product-sv:
+    build:
+      context: ./
+      dockerfile: Dockerfile.product-sv
+    container-name: product-sv
+    volumes:
+      - ./tools/tools
+    ports:
+      - 1456:1456
+    depends_on:
+      - node-server  
+
+
+  prometheus-yml:
+    build:
+      context: ./
+      dockerfile: Dockerfile.metrics    
+    container_name: prometh-yml
+    ports:
+      - 9090:9090
+    depends_on:
+      - node-server

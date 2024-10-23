@@ -1,0 +1,10 @@
+FROM node:18.20.3
+
+WORKDIR /push
+COPY . ./push-notifier
+
+EXPOSE 9123
+
+RUN npm install /tools/metrics
+
+CMD [ "npm", "start"]
